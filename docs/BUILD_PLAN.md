@@ -42,12 +42,12 @@
 | RS6  | `simulatorDevices` (reset-over-delete via `simctl erase`) + `sipReporter` (`/Library/Updates` → blocked, no command) | Sonnet 5 | ✅ done |
 | RS7  | `packageManagerCaches` — npm/yarn/pnpm/Homebrew/pip/cargo/go, each via its own cache-dir query + prune command (app-managed) | Sonnet 5 | ✅ done |
 | RS8  | `xcodeDeviceSupport` + Xcode `Archives` (review) split + `sparkleCaches` (targeted subtree; never the app's data) | Sonnet 5 | ✅ done |
-| RS9  | `vmImages` (Docker/Parallels/UTM/Claude — mostly review; the rootfs investigation annotation) + `stagingLeftovers` (Arduino sibling-`packages/` dependency check) | Sonnet 5 | ⬜ todo |
+| RS9  | `vmImages` (Docker/Parallels/UTM/Claude — mostly review; the rootfs investigation annotation) + `stagingLeftovers` (Arduino sibling-`packages/` dependency check) | Sonnet 5 | ✅ done |
 | RS10 | `trashAndDownloads` + `mobileSyncBackups` — user-data detectors, review-only, exercise the never-safe guard | Sonnet 5 | ⬜ todo |
 | RS11 | `timeMachineSnapshots` + `orphanedNodeModules` — **slow/opt-in** detectors (bounded walk, APFS-reclaimable caveat) | Sonnet 5 | ⬜ todo |
 | RS12 | Scan-result cache (`~/Library/Caches/reclaimd/last-scan.json`) + `reclaimd --json` — responsiveness + the foundation the Later diff mode reads. Diff itself NOT built | Sonnet 5 | ⬜ todo |
 
-**Overall status: RS8 done — Xcode cluster complete (DerivedData/DeviceSupport safe, Archives review); Sparkle proven subtree-scoped (none of the three have real data on this Mac — verified via unit tests, incl. a regression for a real false-positive found while probing). RS9 (VM images + staging leftovers) is next.** The plan front-loads the two safety- and
+**Overall status: RS9 done — vm-images (Docker sparse-divergence + app-managed prune live; Claude VM verified regenerable, caution not review; Parallels/UTM absent here) + staging-leftovers (Arduino sibling-present live). RS10 (user-data detectors) is next.** The plan front-loads the two safety- and
 contract-critical steps (RS2, RS3) so every detector afterward is written against a stable,
 tested foundation, then reaches a **runnable milestone fast**: a working CLI at RS4 and a
 working Raycast list at RS5, both with three real detectors, well before the detector set is

@@ -15,3 +15,5 @@ import "./sipReporter.js";
 import "./packageManagerCaches.js";
 import "./xcodeDeviceSupport.js";
 import "./sparkleCaches.js";
+import "./vmImages.js";
+import "./stagingLeftovers.js";
