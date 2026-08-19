@@ -1,0 +1,14 @@
+{
+  "name": "@reclaimd/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "reclaimd CLI — thin, self-verifiable consumer of @reclaimd/core. Prints findings; never executes reclaim commands.",
+  "type": "module",
+  "bin": {
+    "reclaimd": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "@reclaimd/core": "*"
+  }
+}

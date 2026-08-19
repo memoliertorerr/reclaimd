@@ -34,7 +34,7 @@
 
 | Step | Scope | Model | Status |
 |------|-------|-------|--------|
-| RS1  | Scaffolding — npm-workspaces monorepo (`core`/`cli`/`raycast`), `strict` tsconfig + project references, root `typecheck`/`test`/`reclaimd` scripts, `node:test`+`tsx` runner, CLI `--help` stub | Sonnet 5 | ⬜ todo |
+| RS1  | Scaffolding — npm-workspaces monorepo (`core`/`cli`/`raycast`), `strict` tsconfig + project references, root `typecheck`/`test`/`reclaimd` scripts, `node:test`+`tsx` runner, CLI `--help` stub | Sonnet 5 | ✅ done |
 | RS2  | **The contract** — `core/src/types.ts` (`Finding`, `Detector`, `WarningLevel`, `DetectorContext`), `registry.ts`, `engine.ts` scan loop (streams findings, gates slow detectors). No detectors, no fs helpers yet | **Opus** | ⬜ todo |
 | RS3  | **Safety layer** — `fs/exec.ts` (read-only allowlist, refuses mutating argv), `fs/sip.ts`, `fs/size.ts`, `fs/lastUsed.ts`, `fs/paths.ts` (never-safe guard) **+ unit tests** proving the guarantees | **Opus** | ⬜ todo |
 | RS4  | **First runnable (CLI)** — 3 detectors (`simulatorRuntimes`, `simulatorDyldCaches`, `xcodeDerivedData`) + CLI renderer grouping findings by level with the annotation fields | Sonnet 5 | ⬜ todo |
@@ -47,7 +47,7 @@
 | RS11 | `timeMachineSnapshots` + `orphanedNodeModules` — **slow/opt-in** detectors (bounded walk, APFS-reclaimable caveat) | Sonnet 5 | ⬜ todo |
 | RS12 | Scan-result cache (`~/Library/Caches/reclaimd/last-scan.json`) + `reclaimd --json` — responsiveness + the foundation the Later diff mode reads. Diff itself NOT built | Sonnet 5 | ⬜ todo |
 
-**Overall status: nothing built yet — RS1 is next.** The plan front-loads the two safety- and
+**Overall status: RS1 done — RS2 is next.** The plan front-loads the two safety- and
 contract-critical steps (RS2, RS3) so every detector afterward is written against a stable,
 tested foundation, then reaches a **runnable milestone fast**: a working CLI at RS4 and a
 working Raycast list at RS5, both with three real detectors, well before the detector set is

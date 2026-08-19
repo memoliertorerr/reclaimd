@@ -1,0 +1,12 @@
+{
+  "name": "@reclaimd/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "reclaimd core — UI-agnostic finding model, detector registry, and scan engine. Never imports a UI library.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  }
+}

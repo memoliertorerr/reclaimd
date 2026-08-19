@@ -1,0 +1,28 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "reclaimd",
+  "title": "reclaimd",
+  "description": "Annotated disk-space findings — what's reclaimable, what it costs to get back. Never deletes; copies commands for you to run.",
+  "icon": "icon.png",
+  "author": "TODO_raycast_username",
+  "categories": [
+    "System"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "list",
+      "title": "Scan For Reclaimable Space",
+      "subtitle": "reclaimd",
+      "description": "List disk-space findings with annotations",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^2.0.3",
+    "@reclaimd/core": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10"
+  }
+}
