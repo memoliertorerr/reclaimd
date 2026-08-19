@@ -16,7 +16,11 @@ const MUTATING_ARGVS: string[][] = [
   ["tmutil", "thinlocalsnapshots", "/", "1"],
   ["brew", "cleanup", "-s"],
   ["go", "clean", "-modcache"],
+  ["go", "clean", "-cache"],
   ["defaults", "write", "com.example", "k", "v"],
+  ["yarn", "cache", "clean"],
+  ["pnpm", "store", "prune"],
+  ["pip", "cache", "purge"],
   ["rm", "-rf", "/"],
 ];
 
@@ -49,6 +53,9 @@ test("isAllowed accepts read-only probes and rejects mutating ones", () => {
   assert.equal(isAllowed(["brew", "--cache"]), true);
   assert.equal(isAllowed(["go", "env", "GOMODCACHE"]), true);
   assert.equal(isAllowed(["defaults", "read", "com.example"]), true);
+  assert.equal(isAllowed(["yarn", "cache", "dir"]), true);
+  assert.equal(isAllowed(["pnpm", "store", "path"]), true);
+  assert.equal(isAllowed(["pip", "cache", "dir"]), true);
 
   assert.equal(isAllowed([]), false);
   assert.equal(isAllowed(["xcrun", "simctl", "runtime", "delete", "x"]), false);
@@ -56,6 +63,9 @@ test("isAllowed accepts read-only probes and rejects mutating ones", () => {
   assert.equal(isAllowed(["tmutil", "deletelocalsnapshots", "x"]), false);
   assert.equal(isAllowed(["brew", "install", "wget"]), false);
   assert.equal(isAllowed(["npm", "install"]), false);
+  assert.equal(isAllowed(["yarn", "cache", "clean"]), false);
+  assert.equal(isAllowed(["pnpm", "store", "prune"]), false);
+  assert.equal(isAllowed(["pip", "cache", "purge"]), false);
 });
 
 test("assertAllowed throws with a loud, informative message", () => {

@@ -38,6 +38,12 @@ const ALLOWLIST: Record<string, ArgvRule> = {
   brew: (rest) => rest[0] === "--cache" || rest[0] === "--prefix",
   go: (rest) => rest[0] === "env",
   defaults: (rest) => rest[0] === "read",
+
+  // Read-only cache-location queries for package-manager detectors (RS7). Each
+  // permits ONLY the specific info subcommand named — never a prune/clean form.
+  yarn: (rest) => rest[0] === "cache" && rest[1] === "dir",
+  pnpm: (rest) => rest[0] === "store" && rest[1] === "path",
+  pip: (rest) => rest[0] === "cache" && rest[1] === "dir",
 };
 
 /**

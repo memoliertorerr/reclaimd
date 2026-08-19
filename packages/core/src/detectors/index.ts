@@ -12,3 +12,4 @@ import "./simulatorDevices.js";
 import "./simulatorDyldCaches.js";
 import "./xcodeDerivedData.js";
 import "./sipReporter.js";
+import "./packageManagerCaches.js";
