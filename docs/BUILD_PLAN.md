@@ -39,7 +39,7 @@
 | RS3  | **Safety layer** — `fs/exec.ts` (read-only allowlist, refuses mutating argv), `fs/sip.ts`, `fs/size.ts`, `fs/lastUsed.ts`, `fs/paths.ts` (never-safe guard) **+ unit tests** proving the guarantees | **Opus** | ✅ done |
 | RS4  | **First runnable (CLI)** — 3 detectors (`simulatorRuntimes`, `simulatorDyldCaches`, `xcodeDerivedData`) + CLI renderer grouping findings by level with the annotation fields | Sonnet 5 | ✅ done |
 | RS5  | **First runnable (Raycast)** — Raycast `List` + `Detail` over `engine.scan()`, streamed; Copy-reclaim-command action (never execute) | Sonnet 5 *(Opus for the Raycast-in-workspace spike if it fights back)* | ✅ done |
-| RS6  | `simulatorDevices` (reset-over-delete via `simctl erase`) + `sipReporter` (`/Library/Updates` → blocked, no command) | Sonnet 5 | ⬜ todo |
+| RS6  | `simulatorDevices` (reset-over-delete via `simctl erase`) + `sipReporter` (`/Library/Updates` → blocked, no command) | Sonnet 5 | ✅ done |
 | RS7  | `packageManagerCaches` — npm/yarn/pnpm/Homebrew/pip/cargo/go, each via its own cache-dir query + prune command (app-managed) | Sonnet 5 | ⬜ todo |
 | RS8  | `xcodeDeviceSupport` + Xcode `Archives` (review) split + `sparkleCaches` (targeted subtree; never the app's data) | Sonnet 5 | ⬜ todo |
 | RS9  | `vmImages` (Docker/Parallels/UTM/Claude — mostly review; the rootfs investigation annotation) + `stagingLeftovers` (Arduino sibling-`packages/` dependency check) | Sonnet 5 | ⬜ todo |
@@ -47,7 +47,7 @@
 | RS11 | `timeMachineSnapshots` + `orphanedNodeModules` — **slow/opt-in** detectors (bounded walk, APFS-reclaimable caveat) | Sonnet 5 | ⬜ todo |
 | RS12 | Scan-result cache (`~/Library/Caches/reclaimd/last-scan.json`) + `reclaimd --json` — responsiveness + the foundation the Later diff mode reads. Diff itself NOT built | Sonnet 5 | ⬜ todo |
 
-**Overall status: RS5 done — CLI + Raycast both run over the core engine. RS6 (sim devices + SIP reporter) is next.** The plan front-loads the two safety- and
+**Overall status: RS6 done — reset-over-delete (sim devices) + blocked-no-command (SIP reporter) proven. RS7 (package-manager caches) is next.** The plan front-loads the two safety- and
 contract-critical steps (RS2, RS3) so every detector afterward is written against a stable,
 tested foundation, then reaches a **runnable milestone fast**: a working CLI at RS4 and a
 working Raycast list at RS5, both with three real detectors, well before the detector set is

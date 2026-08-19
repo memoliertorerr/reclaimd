@@ -8,5 +8,7 @@
  * add its file + one import line here — the engine doesn't change.
  */
 import "./simulatorRuntimes.js";
+import "./simulatorDevices.js";
 import "./simulatorDyldCaches.js";
 import "./xcodeDerivedData.js";
+import "./sipReporter.js";
