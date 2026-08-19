@@ -1,3 +1,9 @@
+import { scan } from "@reclaimd/core";
+// Importing the detector barrel runs each detector's self-registration. The CLI
+// (a consumer) opts into the standard detector set here; the engine never does.
+import "@reclaimd/core/detectors";
+import { findingLine, renderReport } from "./render.js";
+
 const USAGE = `reclaimd — macOS disk-space analysis
 
 Reports reclaimable disk space with annotated, human-reviewed recommendations.
@@ -9,13 +15,27 @@ Usage:
 
 Options:
   --help       Show this help and exit
-  --json       Print findings as machine-readable JSON      (not yet implemented — RS12)
-  --slow       Include slow/opt-in detectors                (not yet implemented — RS11)
+  --slow       Include slow/opt-in detectors                (none exist until RS11)
+  --json       Print findings as machine-readable JSON      (not yet implemented — RS12)`;
 
-No scan is implemented yet (see RS4 in docs/BUILD_PLAN.md).`;
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+  if (args.includes("--help") || args.includes("-h")) {
+    console.log(USAGE);
+    return;
+  }
+  const includeSlow = args.includes("--slow");
 
-function main(): void {
-  console.log(USAGE);
+  console.error("Scanning… (findings stream in as detectors finish)\n");
+  const result = await scan({
+    includeSlow,
+    onFinding: (f) => console.error(findingLine(f)),
+  });
+
+  console.log(renderReport(result));
 }
 
-main();
+main().catch((err) => {
+  console.error("reclaimd failed:", err instanceof Error ? err.message : err);
+  process.exitCode = 1;
+});

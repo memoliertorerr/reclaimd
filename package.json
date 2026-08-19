@@ -9,7 +9,7 @@
   "scripts": {
     "typecheck": "tsc -b",
     "test": "node --import tsx --test \"packages/**/*.test.ts\"",
-    "reclaimd": "tsx packages/cli/src/index.ts"
+    "reclaimd": "tsc -b && tsx packages/cli/src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

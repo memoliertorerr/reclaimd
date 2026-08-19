@@ -149,6 +149,12 @@ known paths / tool metadata and returns `Finding[]`. Findings stream back throug
 `Detector` and self-registers, plus one import line in `detectors/index.ts` (the barrel).
 **The engine never changes when a detector is added** — that's the plugin contract.
 
+**The registration seam:** the barrel is exposed as the `@reclaimd/core/detectors` subpath
+export (see `packages/core/package.json` `exports`). A **consumer** (`import
+"@reclaimd/core/detectors";` in the CLI / Raycast) imports it to opt into the standard detector
+set; the engine never does. Consumers resolve core via its compiled `dist/`, so `npm run
+reclaimd` runs `tsc -b` first to keep `dist` fresh before `tsx` starts the CLI.
+
 ---
 
 ## The Finding Model (`packages/core/src/types.ts`)
