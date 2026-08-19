@@ -1,7 +1,8 @@
 import { join } from "node:path";
 import { registerDetector } from "../registry.js";
 import { ensureLevel } from "../fs/paths.js";
-import type { Detector, Finding } from "../types.js";
+import { listSubdirs } from "../fs/listDir.js";
+import type { Detector, Finding, LastUsedResult } from "../types.js";
 
 /**
  * xcode-derived-data — Xcode's per-project build cache.
@@ -10,9 +11,10 @@ import type { Detector, Finding } from "../types.js";
  * module caches — all regenerable by rebuilding. Safe to remove; the cost is a
  * slower next build (and a fresh index).
  *
- * NOTE: `~/Library/Developer/Xcode/Archives` is a DIFFERENT, review-level
- * finding (real shippable .xcarchives, not a cache) — that lands in RS8. This
- * detector is DerivedData only.
+ * `~/Library/Developer/Xcode/Archives` is a DIFFERENT, review-level detector
+ * (`xcodeArchives` below, same file per CLAUDE.md's file structure) — real
+ * shippable .xcarchive builds, NOT a cache. Deliberately the opposite verdict
+ * to DerivedData sitting one directory over.
  */
 export const xcodeDerivedData: Detector = {
   id: "xcode-derived-data",
@@ -60,3 +62,81 @@ export const xcodeDerivedData: Detector = {
 };
 
 registerDetector(xcodeDerivedData);
+
+/**
+ * xcode-archives — real shippable Xcode build archives.
+ *
+ * `~/Library/Developer/Xcode/Archives` holds `.xcarchive` bundles Xcode
+ * produced for App Store submission or ad-hoc distribution — usually grouped
+ * into date-named subdirs, one per archive day. UNLIKE DerivedData, an archive
+ * is NOT a rebuildable cache: it's your only copy of that exact build's dSYMs
+ * (needed to symbolicate old crash reports) and the artifact you'd re-export
+ * or re-sign to resubmit that exact build. Never `safe` — always `review`, and
+ * deliberately no aggressive reclaim command is offered, only information.
+ */
+/** Pure finding builder — exported so the review/no-reclaim shape is unit-testable. */
+export function buildArchiveFinding(
+  dateName: string,
+  path: string,
+  sizeBytes: number,
+  apparentSizeBytes: number | undefined,
+  lastUsed: LastUsedResult,
+): Finding {
+  return {
+    id: `xcode-archive:${dateName}`,
+    detector: "xcode-archives",
+    title: `Xcode Archives — ${dateName}`,
+    paths: [path],
+    sizeBytes,
+    apparentSizeBytes,
+    // Deliberately never "safe" — this is real, hard-to-reproduce data,
+    // the opposite of DerivedData sitting one directory over.
+    level: "review",
+    lastUsedAt: lastUsed.at,
+    lastUsedSource: lastUsed.source,
+    whatItIs:
+      "One or more Xcode .xcarchive build archives from this date — the actual compiled, " +
+      "symbol-rich builds Xcode produced for App Store submission or ad-hoc distribution. " +
+      "Unlike DerivedData (a pure rebuildable cache), an archive is NOT reproducible from " +
+      "source alone: rebuilding gives you an equivalent binary, not this exact signed build " +
+      "or its dSYMs.",
+    ifRemoved:
+      "You lose this build's dSYMs (needed to symbolicate crash reports from it) and the " +
+      "ability to re-export or re-sign exactly this build without rebuilding from the " +
+      "matching source and signing state. Only remove an archive you're certain you'll " +
+      "never need to resubmit or symbolicate again — that's a call only you can make.",
+    dependents: [
+      "App Store Connect resubmission of this exact build",
+      "Crash-log symbolication using this build's dSYMs",
+    ],
+    reversible: {
+      possible: false, // not regenerable — that's precisely why this is `review`
+    },
+    // Deliberately NO `reclaim` field — inform only, never an aggressive command.
+  };
+}
+
+export const xcodeArchives: Detector = {
+  id: "xcode-archives",
+  title: "Xcode Archives (.xcarchive)",
+  cost: "fast",
+  async scan(ctx): Promise<Finding[]> {
+    const base = join(ctx.home, "Library/Developer/Xcode/Archives");
+    if (!(await ctx.pathExists(base))) return [];
+
+    const findings: Finding[] = [];
+    for (const dateName of await listSubdirs(base)) {
+      const path = join(base, dateName);
+      const size = await ctx.dirSize(path);
+      const bytes = size.unknown ? 0 : size.diskBytes;
+      if (!size.unknown && bytes === 0) continue; // empty — nothing to report
+
+      const lu = await ctx.lastUsed(path);
+      findings.push(buildArchiveFinding(dateName, path, bytes, size.unknown ? undefined : size.apparentBytes, lu));
+    }
+
+    return findings;
+  },
+};
+
+registerDetector(xcodeArchives);

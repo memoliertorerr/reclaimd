@@ -290,6 +290,7 @@ reclaim/                              ← repo root (project name: reclaimd)
           lastUsed.ts                 ← lastUsedAt + source tagging
           paths.ts                    ← known paths, PROTECTED_ROOTS, never-safe guard
           exists.ts                   ← pathExists (read-only fs.access wrapper)
+          listDir.ts                  ← listSubdirs (read-only fs.readdir wrapper)
         detectors/
           index.ts                    ← barrel: imports every detector so it self-registers
           simulatorRuntimes.ts        ← iOS/watchOS/tvOS runtimes (simctl Last Used At)

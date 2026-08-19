@@ -13,3 +13,5 @@ import "./simulatorDyldCaches.js";
 import "./xcodeDerivedData.js";
 import "./sipReporter.js";
 import "./packageManagerCaches.js";
+import "./xcodeDeviceSupport.js";
+import "./sparkleCaches.js";
