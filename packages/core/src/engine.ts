@@ -1,7 +1,13 @@
-import { homedir } from "node:os";
 import { getDetectors } from "./registry.js";
+import { exec as realExec, type ExecOptions } from "./fs/exec.js";
+import { createSipProbe } from "./fs/sip.js";
+import { createDirSize } from "./fs/size.js";
+import { createLastUsed } from "./fs/lastUsed.js";
+import { pathExists } from "./fs/exists.js";
+import { home as homeDir } from "./fs/paths.js";
 import type {
   DetectorContext,
+  ExecResult,
   ScanOptions,
   ScanResult,
   SkippedDetector,
@@ -9,22 +15,21 @@ import type {
 } from "./types.js";
 
 /**
- * RS2 placeholder context. The fs helpers throw until the real safety layer
- * lands in RS3, which replaces this factory with one wired to fs/exec, fs/sip,
- * fs/size, fs/lastUsed, fs/paths. `home`, `log`, and `signal` are already real
- * — they aren't fs helpers, and detectors legitimately need them.
+ * Build the real DetectorContext for a scan, backed by the fs safety layer.
+ * Every subprocess goes through the read-only `exec` allowlist, bound to this
+ * scan's AbortSignal so cancellation propagates into `du`/`stat`/`simctl`/…
  */
 function createContext(signal?: AbortSignal): DetectorContext {
-  const notYet = (helper: string) => (): never => {
-    throw new Error(`DetectorContext.${helper} is not implemented until RS3 (fs safety layer)`);
-  };
+  const boundExec = (argv: string[], opts: ExecOptions = {}): Promise<ExecResult> =>
+    realExec(argv, { signal, ...opts });
+
   return {
-    home: homedir(),
-    dirSize: notYet("dirSize"),
-    isSipRestricted: notYet("isSipRestricted"),
-    lastUsed: notYet("lastUsed"),
-    exec: notYet("exec"),
-    pathExists: notYet("pathExists"),
+    home: homeDir(),
+    dirSize: createDirSize(boundExec),
+    isSipRestricted: createSipProbe(boundExec, pathExists),
+    lastUsed: createLastUsed(),
+    exec: (argv: string[]) => boundExec(argv),
+    pathExists,
     log: (msg: string) => console.error(`[reclaimd] ${msg}`),
     signal,
   };

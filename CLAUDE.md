@@ -283,6 +283,7 @@ reclaim/                              ← repo root (project name: reclaimd)
           size.ts                     ← du wrapper; apparent vs on-disk (APFS-aware)
           lastUsed.ts                 ← lastUsedAt + source tagging
           paths.ts                    ← known paths, PROTECTED_ROOTS, never-safe guard
+          exists.ts                   ← pathExists (read-only fs.access wrapper)
         detectors/
           index.ts                    ← barrel: imports every detector so it self-registers
           simulatorRuntimes.ts        ← iOS/watchOS/tvOS runtimes (simctl Last Used At)

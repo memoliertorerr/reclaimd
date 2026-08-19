@@ -5,3 +5,5 @@
 export type * from "./types.js";
 export { registerDetector, getDetectors, clearDetectors } from "./registry.js";
 export { scan } from "./engine.js";
+// Safety-layer helpers detectors and consumers may need directly.
+export { ensureLevel, isProtected, protectedRoots, expandTilde, home } from "./fs/paths.js";
