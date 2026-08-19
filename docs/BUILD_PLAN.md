@@ -38,7 +38,7 @@
 | RS2  | **The contract** — `core/src/types.ts` (`Finding`, `Detector`, `WarningLevel`, `DetectorContext`), `registry.ts`, `engine.ts` scan loop (streams findings, gates slow detectors). No detectors, no fs helpers yet | **Opus** | ✅ done |
 | RS3  | **Safety layer** — `fs/exec.ts` (read-only allowlist, refuses mutating argv), `fs/sip.ts`, `fs/size.ts`, `fs/lastUsed.ts`, `fs/paths.ts` (never-safe guard) **+ unit tests** proving the guarantees | **Opus** | ✅ done |
 | RS4  | **First runnable (CLI)** — 3 detectors (`simulatorRuntimes`, `simulatorDyldCaches`, `xcodeDerivedData`) + CLI renderer grouping findings by level with the annotation fields | Sonnet 5 | ✅ done |
-| RS5  | **First runnable (Raycast)** — Raycast `List` + `Detail` over `engine.scan()`, streamed; Copy-reclaim-command action (never execute) | Sonnet 5 *(Opus for the Raycast-in-workspace spike if it fights back)* | ⬜ todo |
+| RS5  | **First runnable (Raycast)** — Raycast `List` + `Detail` over `engine.scan()`, streamed; Copy-reclaim-command action (never execute) | Sonnet 5 *(Opus for the Raycast-in-workspace spike if it fights back)* | ✅ done |
 | RS6  | `simulatorDevices` (reset-over-delete via `simctl erase`) + `sipReporter` (`/Library/Updates` → blocked, no command) | Sonnet 5 | ⬜ todo |
 | RS7  | `packageManagerCaches` — npm/yarn/pnpm/Homebrew/pip/cargo/go, each via its own cache-dir query + prune command (app-managed) | Sonnet 5 | ⬜ todo |
 | RS8  | `xcodeDeviceSupport` + Xcode `Archives` (review) split + `sparkleCaches` (targeted subtree; never the app's data) | Sonnet 5 | ⬜ todo |
@@ -47,7 +47,7 @@
 | RS11 | `timeMachineSnapshots` + `orphanedNodeModules` — **slow/opt-in** detectors (bounded walk, APFS-reclaimable caveat) | Sonnet 5 | ⬜ todo |
 | RS12 | Scan-result cache (`~/Library/Caches/reclaimd/last-scan.json`) + `reclaimd --json` — responsiveness + the foundation the Later diff mode reads. Diff itself NOT built | Sonnet 5 | ⬜ todo |
 
-**Overall status: RS4 done — CLI runs and prints real annotated findings. RS5 (first runnable Raycast) is next.** The plan front-loads the two safety- and
+**Overall status: RS5 done — CLI + Raycast both run over the core engine. RS6 (sim devices + SIP reporter) is next.** The plan front-loads the two safety- and
 contract-critical steps (RS2, RS3) so every detector afterward is written against a stable,
 tested foundation, then reaches a **runnable milestone fast**: a working CLI at RS4 and a
 working Raycast list at RS5, both with three real detectors, well before the detector set is
@@ -819,10 +819,20 @@ diff mode)") AND git push. Do not commit.
   Disk Access" (RS10) but never guides the user to grant it. A Raycast/CLI affordance that
   detects the missing permission and links to System Settings is a real follow-up. Detector-
   agnostic; not blocking v1.
-- **The Raycast-in-workspace bundling decision (RS5) may need revisiting for distribution.**
-  `ray develop` working doesn't guarantee `ray build` for a store/self-hosted distribution
-  behaves the same with a workspace dependency. Note the approach RS5 lands on here so the
-  future packaging step doesn't re-derive it.
+- **The Raycast-in-workspace bundling decision (RS5) — resolved for dev, may need revisiting for distribution.**
+  RS5 finding: bundling `@reclaimd/core` into the extension **worked with zero friction** —
+  `ray build -e dist` compiles and bundles the workspace dependency via its compiled `dist/`
+  output (core's package.json `exports` `.` + `./detectors`). The ONLY monorepo friction was
+  unrelated to core: the `ray` CLI hardcodes a check for `./node_modules/.bin/tsc` in the
+  extension dir, but npm workspaces hoist that bin to the repo root. Solved by
+  `scripts/prepare-raycast.mjs` (idempotent extension-local `tsc` symlink) wired into root
+  scripts `raycast:prepare` / `raycast:dev` / `raycast:build`. **Run the extension via
+  `npm run raycast:dev`, not a bare `ray develop`.** Second gotcha (also RS5): `ray develop`
+  defaults to the `com.raycast.macos.development` build (a separate "Raycast (Development)"
+  app most people don't have); the standard **release** Raycast is `com.raycast.macos`, so the
+  scripts pass **`-t release`** to target it. The Raycast app must be running. `ray build -e
+  dist` (a production-target build) also passes, so store/self-hosted distribution is likely
+  fine, but confirm when the packaging step lands.
 - *(Steps will add to this list as they surface out-of-scope friction — record it here, don't
   bury it in a step's notes.)*
 

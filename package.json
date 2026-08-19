@@ -9,7 +9,10 @@
   "scripts": {
     "typecheck": "tsc -b",
     "test": "node --import tsx --test \"packages/**/*.test.ts\"",
-    "reclaimd": "tsc -b && tsx packages/cli/src/index.ts"
+    "reclaimd": "tsc -b && tsx packages/cli/src/index.ts",
+    "raycast:prepare": "tsc -b && node scripts/prepare-raycast.mjs",
+    "raycast:dev": "npm run raycast:prepare && npm --workspace packages/raycast exec -- ray develop -t release",
+    "raycast:build": "npm run raycast:prepare && npm --workspace packages/raycast exec -- ray build -e dist -t release"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

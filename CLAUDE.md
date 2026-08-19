@@ -311,14 +311,25 @@ reclaim/                              ← repo root (project name: reclaimd)
         index.ts                      ← runs engine.scan(), prints findings
         render.ts                     ← text/table + (later) --json / --markdown formatting
     raycast/                          ← the Raycast extension — one consumer of core
-      package.json                    ← @raycast/api manifest (commands, preferences)
+      package.json                    ← @raycast/api manifest (commands, includeSlow preference)
+      assets/
+        icon.png                      ← 512×512 extension icon (required by ray)
       src/
         list.tsx                      ← findings List + Detail; Copy-reclaim-command action (never execute)
+  scripts/
+    prepare-raycast.mjs               ← ensures extension-local tsc for the ray CLI (npm-workspace bin-hoist fix)
   docs/
     BUILD_PLAN.md                     ← THE canonical step tracker (read first every session)
     ARCHITECTURE.md                   ← deeper architecture notes as they accrue (optional, created when needed)
   CLAUDE.md                           ← this file
 ```
+
+**Running the Raycast extension:** use **`npm run raycast:dev`** (not a bare `ray develop`),
+with the **Raycast app running**. It runs `raycast:prepare` first — builds core's `dist/` and
+links an extension-local `tsc` — then launches `ray develop -t release` in `packages/raycast`.
+The `-t release` targets the standard `com.raycast.macos` app; without it `ray` defaults to a
+`…development` build most machines don't have. `npm run raycast:build` does the one-shot
+production build. See BUILD_PLAN.md's deferred-follow-ups for the full why.
 
 ---
 

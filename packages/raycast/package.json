@@ -4,7 +4,7 @@
   "title": "reclaimd",
   "description": "Annotated disk-space findings — what's reclaimable, what it costs to get back. Never deletes; copies commands for you to run.",
   "icon": "icon.png",
-  "author": "TODO_raycast_username",
+  "author": "reclaimd",
   "categories": [
     "System"
   ],
@@ -15,7 +15,18 @@
       "title": "Scan For Reclaimable Space",
       "subtitle": "reclaimd",
       "description": "List disk-space findings with annotations",
-      "mode": "view"
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "includeSlow",
+          "type": "checkbox",
+          "required": false,
+          "title": "Slow detectors",
+          "label": "Include slow / opt-in detectors",
+          "description": "Run higher-cost detectors (e.g. Time Machine snapshots, orphaned node_modules). None exist until a later build step; the toggle is wired now.",
+          "default": false
+        }
+      ]
     }
   ],
   "dependencies": {
@@ -23,6 +34,8 @@
     "@reclaimd/core": "*"
   },
   "devDependencies": {
-    "@types/react": "^19.0.10"
+    "@types/react": "^19.0.10",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
   }
 }
